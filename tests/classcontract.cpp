@@ -21,7 +21,7 @@ public:
 	 account(int bal)
 		  : balance_(-1)
 	 {
-		  CONTRACT(ctor) {std::cout << 1 << std::endl;};
+		  CONTRACT(ctor) {};
 		  balance_ = bal;  // the class contract is checked on constructor exit
 	 }
 
