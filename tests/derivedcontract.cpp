@@ -140,8 +140,6 @@ private:
     };
 };
 
-}
-
 BOOST_AUTO_TEST_CASE(derived_contract_with_many_bases) {
     BOOST_CHECK_NO_THROW(derived_with_many_bases());
 }
