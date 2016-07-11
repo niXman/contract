@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/niXman/contract.svg?branch=master)](https://travis-ci.org/niXman/contract)
+
 # Contract #
 Reworked version of [Contract library](https://github.com/alexeiz/contract) by [alexeiz](https://github.com/alexeiz).
 
