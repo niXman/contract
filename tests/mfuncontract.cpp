@@ -12,6 +12,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace {
+
 class account {
 public:
     account(int bal)
@@ -36,7 +38,9 @@ private:
     int balance_;
 };
 
-BOOST_AUTO_TEST_CASE(method_contract) {
+} // anon namespace
+
+BOOST_AUTO_TEST_CASE(member_function_contract) {
     test::contract_handler_frame cframe;
 
     // expect contract to pass

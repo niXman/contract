@@ -12,6 +12,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+namespace {
+
 class throwing_ctor_t {};
 
 class base_account
@@ -20,7 +22,7 @@ public:
     base_account(double rate)
         : interest_rate_(rate)
     {
-        contract(ctor) {};
+        CONTRACT(ctor) {};
     }
 
     ~base_account()
@@ -29,9 +31,9 @@ public:
     }
 
 private:
-    contract(class)
+    CONTRACT(class)
     {
-        invariant(interest_rate_ >= 0);
+        INVARIANT(interest_rate_ >= 0);
     };
 
 protected:
@@ -47,7 +49,7 @@ public:
         : base_account(rate)
         , balance_(-1)
     {
-        contract(ctor) {};
+        CONTRACT(ctor) {};
         balance_ = bal;  // the class contract is checked on constructor exit
     }
 
@@ -55,7 +57,7 @@ public:
         : base_account(1)
         , balance_(-1)
     {
-        contract(ctor) {};
+        CONTRACT(ctor) {};
         throw test::non_contract_error{};
     }
 
@@ -63,37 +65,37 @@ public:
                                 // an exception; if the contract check aborts
                                 // the destructor can and should be noexcept
     {
-        contract(dtor) {};
+        CONTRACT(dtor) {};
         balance_ = -1;  // the class contract is checked on destructor entry
     }
 
     int balance() const
     {
-        contract(this) {};
+        CONTRACT(mfun) {};
         return balance_;
     }
 
     void balance(int bal)
     {
-        contract(this) {};
+        CONTRACT(mfun) {};
         balance_ = bal;  // the class contract is checked both on method
                          // entry and exit
     }
 
     double interest_rate() const
     {
-        contract(this) {};
+        CONTRACT(mfun) {};
         return interest_rate_;
     }
 
     void interest_rate(double rate)
     {
-        contract(this) {};
+        CONTRACT(mfun) {};
         interest_rate_ = rate;
     }
 
 private:
-    contract(derived)(base_account) { invariant(balance_ > 0, "invariant"); };
+    CONTRACT(derived)(base_account) { INVARIANT(balance_ > 0, "invariant"); };
 
 private:
     int balance_;
@@ -110,13 +112,13 @@ class derived_with_invariant : public base_no_invariant
 public:
     derived_with_invariant()
     {
-        contract(ctor) {};
+        CONTRACT(ctor) {};
     }
 
 private:
-    contract(derived)(base_no_invariant)
+    CONTRACT(derived)(base_no_invariant)
     {
-        invariant(true);
+        INVARIANT(true);
     };
 };
 
@@ -124,9 +126,9 @@ private:
 class base_with_invariant
 {
 private:
-    contract(class)
+    CONTRACT(class)
     {
-        invariant(true);
+        INVARIANT(true);
     };
 };
 
@@ -136,26 +138,25 @@ class derived_with_many_bases : public derived_with_invariant
                               , public base_no_invariant2
 {
 private:
-    contract(derived)(derived_with_invariant,
+    CONTRACT(derived)(derived_with_invariant,
                       base_with_invariant,
                       base_no_invariant2)
     {
-        invariant(true);
+        INVARIANT(true);
     };
 };
 
-BOOST_AUTO_TEST_CASE(derived_contract_with_many_bases)
-{
+} // anon namespace
+
+BOOST_AUTO_TEST_CASE(derived_contract_with_many_bases) {
     BOOST_CHECK_NO_THROW(derived_with_many_bases());
 }
 
-BOOST_AUTO_TEST_CASE(derived_contract_base_without_contract)
-{
+BOOST_AUTO_TEST_CASE(derived_contract_base_without_contract) {
     BOOST_CHECK_NO_THROW(derived_with_invariant());
 }
 
-BOOST_AUTO_TEST_CASE(derived_contract_in_ctor_dtor)
-{
+BOOST_AUTO_TEST_CASE(derived_contract_in_ctor_dtor) {
     test::contract_handler_frame cframe;
 
     // expect class invariant to pass
@@ -169,14 +170,12 @@ BOOST_AUTO_TEST_CASE(derived_contract_in_ctor_dtor)
     BOOST_CHECK_THROW(account(throwing_ctor_t{}), test::non_contract_error);
 }
 
-BOOST_AUTO_TEST_CASE(derived_contract_in_method)
-{
+BOOST_AUTO_TEST_CASE(derived_contract_in_method) {
     test::contract_handler_frame cframe;
 
     bool caught_exception = false;
 
-    try
-    {
+    try {
         // expect class invariant to pass
         account acc{10, 0.05};
         BOOST_CHECK_NO_THROW(acc.interest_rate(0.1));
@@ -192,23 +191,13 @@ BOOST_AUTO_TEST_CASE(derived_contract_in_method)
         BOOST_CHECK_THROW(acc.interest_rate(), test::contract_error);
 
         // verify that the destructor also throws on contract violation
-    }
-    catch (test::contract_error & e)
-    {
+    } catch (test::contract_error & e) {
         caught_exception = true;
         BOOST_CHECK(e.type() == contract::type::invariant);
-    }
-    catch (...)
-    {
+    } catch (...) {
         caught_exception = true;
         BOOST_FAIL("expected to catch test::contract_error");
     }
 
     BOOST_CHECK(caught_exception);
 }
-
-// Copyright Alexei Zakharov, 2013.
-//
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
