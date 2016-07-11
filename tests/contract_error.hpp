@@ -1,5 +1,13 @@
-#ifndef included_contract_error_hpp__
-#define included_contract_error_hpp__
+
+// Copyright Alexei Zakharov, 2013.
+// Copyright niXman (i dot nixman dog gmail dot com) 2016.
+//
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+#ifndef __contract_error_hpp__included
+#define __contract_error_hpp__included
 
 #include <contract/contract.hpp>
 
@@ -10,13 +18,11 @@
 #include <sstream>
 #include <string>
 
-namespace test
-{
+namespace test {
 
 struct non_contract_error {};
 
-struct contract_error : std::exception
-{
+struct contract_error : std::exception {
     contract_error(contract::violation_context const & context)
         : context_{context}
     {
@@ -46,8 +52,7 @@ struct contract_error : std::exception
         error_ = err.str();
     }
 
-    char const * what() const noexcept override
-    {
+    char const * what() const noexcept override {
         return error_.c_str();
     }
 
@@ -63,14 +68,12 @@ private:
 };
 
 inline
-void throw_contract_error(contract::violation_context const & context)
-{
+void throw_contract_error(contract::violation_context const & context) {
     throw contract_error(context);
 }
 
 template <typename = void>
-struct terminate_holder
-{
+struct terminate_holder {
     static
     std::terminate_handler default_terminate;
 };
@@ -79,13 +82,11 @@ template <typename T>
 std::terminate_handler terminate_holder<T>::default_terminate{nullptr};
 
 inline
-void terminate()
-{
+void terminate() {
     terminate_holder<>::default_terminate();
 }
 
-struct contract_handler_frame
-{
+struct contract_handler_frame {
     contract_handler_frame()
         : old_handler_{contract::set_handler(throw_contract_error)}
     {
@@ -102,21 +103,15 @@ struct contract_handler_frame
 };
 
 template <typename Func>
-void check_throw_on_contract_violation(Func f, contract::type type)
-{
+void check_throw_on_contract_violation(Func f, contract::type type) {
     bool caught_exception = false;
 
-    try
-    {
+    try {
         f();
-    }
-    catch (test::contract_error & e)
-    {
+    } catch (test::contract_error & e) {
         caught_exception = true;
         BOOST_CHECK(e.type() == type);
-    }
-    catch (...)
-    {
+    } catch (...) {
         caught_exception = true;
         BOOST_FAIL("expected to catch test::contract_error");
     }
@@ -125,22 +120,16 @@ void check_throw_on_contract_violation(Func f, contract::type type)
 }
 
 template <typename Func>
-void check_throw_on_contract_violation(Func f, contract::type type, char const * msg)
-{
+void check_throw_on_contract_violation(Func f, contract::type type, char const * msg) {
     bool caught_exception = false;
 
-    try
-    {
+    try {
         f();
-    }
-    catch (test::contract_error & e)
-    {
+    } catch (test::contract_error & e) {
         caught_exception = true;
         BOOST_CHECK(e.type() == type);
         BOOST_CHECK(e.message() == std::string(msg));
-    }
-    catch (...)
-    {
+    } catch (...) {
         caught_exception = true;
         BOOST_FAIL("expected to catch test::contract_error");
     }
@@ -148,12 +137,6 @@ void check_throw_on_contract_violation(Func f, contract::type type, char const *
     BOOST_CHECK(caught_exception);
 }
 
-}
+} // namespace test
 
-// Copyright Alexei Zakharov, 2013.
-//
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
-
-#endif
+#endif // __contract_error_hpp__included

@@ -1,11 +1,16 @@
+
+// Copyright Alexei Zakharov, 2013.
+// Copyright niXman (i dot nixman dog gmail dot com) 2016.
+//
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 #include <contract/contract.hpp>
 
 #include "contract_error.hpp"
 
 #include <boost/test/unit_test.hpp>
-
-namespace
-{
 
 class throwing_ctor_t {};
 
@@ -54,10 +59,7 @@ private:
     int balance_;
 };
 
-}
-
-BOOST_AUTO_TEST_CASE(class_contract_in_ctor_dtor)
-{
+BOOST_AUTO_TEST_CASE(class_contract_in_ctor_dtor) {
     test::contract_handler_frame cframe;
 
     // expect class invariant to pass
@@ -76,8 +78,7 @@ BOOST_AUTO_TEST_CASE(class_contract_in_method)
 
     bool caught_exception = false;
 
-    try
-    {
+    try {
         // expect class invariant to pass
         account acc(10);
         BOOST_CHECK_NO_THROW(acc.balance());
@@ -94,23 +95,13 @@ BOOST_AUTO_TEST_CASE(class_contract_in_method)
         BOOST_CHECK_THROW(acc.balance(), test::contract_error);
 
         // verify that the destructor also throws on contract violation
-    }
-    catch (test::contract_error & e)
-    {
+    } catch (test::contract_error & e) {
         caught_exception = true;
         BOOST_CHECK(e.type() == contract::type::invariant);
-    }
-    catch (...)
-    {
+    } catch (...) {
         caught_exception = true;
         BOOST_FAIL("expected to catch test::contract_error");
     }
 
     BOOST_CHECK(caught_exception);
 }
-
-// Copyright Alexei Zakharov, 2013.
-//
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)

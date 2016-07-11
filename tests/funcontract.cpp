@@ -1,47 +1,47 @@
+
+// Copyright Alexei Zakharov, 2013.
+// Copyright niXman (i dot nixman dog gmail dot com) 2016.
+//
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 #include <contract/contract.hpp>
 
 #include "contract_error.hpp"
 
 #include <boost/test/unit_test.hpp>
 
-void fun_contract_test_precondition(bool par)
-{
+void fun_contract_test_precondition(bool par) {
     CONTRACT(fun) { PRECONDITION(par); };
 }
 
-void fun_contract_test_precondition(bool par, char const * msg)
-{
+void fun_contract_test_precondition(bool par, char const * msg) {
     CONTRACT(fun) { PRECONDITION(par, msg); };
 }
 
-void fun_contract_test_invariant(bool par)
-{
+void fun_contract_test_invariant(bool par) {
     CONTRACT(fun) { INVARIANT(par); };
 }
 
-void fun_contract_test_invariant(bool par, char const * msg)
-{
+void fun_contract_test_invariant(bool par, char const * msg) {
     CONTRACT(fun) { INVARIANT(par, msg); };
 }
 
-void fun_contract_test_postcondition(bool par)
-{
+void fun_contract_test_postcondition(bool par) {
     CONTRACT(fun) { POSTCONDITION(par); };
 }
 
-void fun_contract_test_postcondition(bool par, char const * msg)
-{
+void fun_contract_test_postcondition(bool par, char const * msg) {
     CONTRACT(fun) { POSTCONDITION(par, msg); };
 }
 
-void fun_contract_test_postcondition_exception()
-{
+void fun_contract_test_postcondition_exception() {
     CONTRACT(fun) { POSTCONDITION(false); };
     throw test::non_contract_error{};
 }
 
-void fun_contract_test_all(bool pre, bool inv, bool post)
-{
+void fun_contract_test_all(bool pre, bool inv, bool post) {
     CONTRACT(fun)
     {
         PRECONDITION(pre);
@@ -50,8 +50,7 @@ void fun_contract_test_all(bool pre, bool inv, bool post)
     };
 }
 
-BOOST_AUTO_TEST_CASE(fun_contract_precondition)
-{
+BOOST_AUTO_TEST_CASE(fun_contract_precondition) {
     test::contract_handler_frame cframe;
 
     // expect precondition to pass
@@ -73,8 +72,7 @@ BOOST_AUTO_TEST_CASE(fun_contract_precondition)
         contract::type::precondition);
 }
 
-BOOST_AUTO_TEST_CASE(fun_contract_invariant)
-{
+BOOST_AUTO_TEST_CASE(fun_contract_invariant) {
     test::contract_handler_frame cframe;
 
     // expect invariant to pass
@@ -96,8 +94,7 @@ BOOST_AUTO_TEST_CASE(fun_contract_invariant)
         contract::type::invariant);
 }
 
-BOOST_AUTO_TEST_CASE(fun_contract_postcondition)
-{
+BOOST_AUTO_TEST_CASE(fun_contract_postcondition) {
     test::contract_handler_frame cframe;
 
     // expect postcondition to pass
@@ -123,14 +120,7 @@ BOOST_AUTO_TEST_CASE(fun_contract_postcondition)
                       test::non_contract_error);
 }
 
-BOOST_AUTO_TEST_CASE(fun_contract_all)
-{
+BOOST_AUTO_TEST_CASE(fun_contract_all) {
     // expect contract to pass
     BOOST_CHECK_NO_THROW(fun_contract_test_all(true, true, true));
 }
-
-// Copyright Alexei Zakharov, 2013.
-//
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)

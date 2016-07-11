@@ -567,8 +567,6 @@ inline
 violation_handler get_handler() {
 	return detail::handler_holder<>::current_handler;
 }
-
-/***************************************************************************/
 	
 } // namespace contract
 

@@ -1,11 +1,18 @@
+
+// Copyright Alexei Zakharov, 2013.
+// Copyright niXman (i dot nixman dog gmail dot com) 2016.
+//
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 #include <contract/contract.hpp>
 
 #include "contract_error.hpp"
 
 #include <boost/test/unit_test.hpp>
 
-void loop_invariant_success()
-{
+void loop_invariant_success() {
     for (int i = 0; i != 10; ++i)
     {
         CONTRACT(loop)
@@ -16,8 +23,7 @@ void loop_invariant_success()
     }
 }
 
-void loop_invariant_failure()
-{
+void loop_invariant_failure() {
     for (int i = 0; i != 10; ++i)
     {
         CONTRACT(loop)
@@ -27,8 +33,7 @@ void loop_invariant_failure()
     }
 }
 
-void ignore_pre_postcondition()
-{
+void ignore_pre_postcondition() {
     for (int i = 0; i != 10; ++i)
     {
         CONTRACT(loop)
@@ -39,8 +44,7 @@ void ignore_pre_postcondition()
     }
 }
 
-BOOST_AUTO_TEST_CASE(loop_invariant)
-{
+BOOST_AUTO_TEST_CASE(loop_invariant) {
     test::contract_handler_frame cframe;
 
     // expect loop invariant to pass
@@ -52,9 +56,3 @@ BOOST_AUTO_TEST_CASE(loop_invariant)
     // skip precondition and postcondition inside loop contract
     BOOST_CHECK_NO_THROW(ignore_pre_postcondition());
 }
-
-// Copyright Alexei Zakharov, 2013.
-//
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)

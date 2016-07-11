@@ -1,3 +1,11 @@
+
+// Copyright Alexei Zakharov, 2013.
+// Copyright niXman (i dot nixman dog gmail dot com) 2016.
+//
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
 #define CONTRACT_DISABLE_POSTCONDITIONS
 #include <contract/contract.hpp>
 
@@ -40,9 +48,3 @@ BOOST_AUTO_TEST_CASE(macro_disable_postconditions)
     BOOST_CHECK_THROW(test_disable_postconditions_invariant(),
                       test::contract_error);
 }
-
-// Copyright Alexei Zakharov, 2013.
-//
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
