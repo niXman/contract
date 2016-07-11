@@ -23,113 +23,113 @@ namespace test {
 struct non_contract_error {};
 
 struct contract_error : std::exception {
-    contract_error(contract::violation_context const & context)
-        : context_{context}
-    {
-        std::ostringstream err;
-        err << context.file << ':' << context.line
-            << ": error: contract violation of type '";
+	 contract_error(contract::violation_context const & context)
+		  : context_{context}
+	 {
+		  std::ostringstream err;
+		  err << context.file << ':' << context.line
+				<< ": error: contract violation of type '";
 
-        char const * type_str;
+		  char const * type_str = "<unknown type>";
 
-        switch (context.contract_type) {
-            case contract::type::precondition:
-                type_str = "precondition";
-            break;
-            case contract::type::postcondition:
-                type_str = "postcondition";
-            break;
-            case contract::type::invariant:
-                type_str = "invariant";
-            break;
-        }
+		  switch (context.contract_type) {
+				case contract::type::precondition:
+					 type_str = "precondition";
+				break;
+				case contract::type::postcondition:
+					 type_str = "postcondition";
+				break;
+				case contract::type::invariant:
+					 type_str = "invariant";
+				break;
+		  }
 
-        err << type_str << "'\n"
-            << "message:   " << context.message << "\n"
-            << "condition: " << context.condition << std::endl;
+		  err << type_str << "'\n"
+				<< "message:   " << context.message << "\n"
+				<< "condition: " << context.condition << std::endl;
 
-        error_ = err.str();
-    }
+		  error_ = err.str();
+	 }
 
-    char const * what() const noexcept override { return error_.c_str(); }
+	 char const * what() const noexcept override { return error_.c_str(); }
 
-    contract::type type() const { return context_.contract_type; }
-    char const * message() const { return context_.message; }
-    char const * condition() const { return context_.condition; }
-    char const * file() const { return context_.file; }
-    std::size_t line() const { return context_.line; }
+	 contract::type type() const { return context_.contract_type; }
+	 char const * message() const { return context_.message; }
+	 char const * condition() const { return context_.condition; }
+	 char const * file() const { return context_.file; }
+	 std::size_t line() const { return context_.line; }
 
 private:
-    contract::violation_context context_;
-    std::string error_;
+	 contract::violation_context context_;
+	 std::string error_;
 };
 
 inline
 void throw_contract_error(contract::violation_context const & context) {
-    throw contract_error(context);
+	 throw contract_error(context);
 }
 
 template <typename = void>
 struct terminate_holder {
-    static std::terminate_handler default_terminate;
+	 static std::terminate_handler default_terminate;
 };
 template <typename T>
 std::terminate_handler terminate_holder<T>::default_terminate{nullptr};
 
 inline
 void terminate() {
-    terminate_holder<>::default_terminate();
+	 terminate_holder<>::default_terminate();
 }
 
 struct contract_handler_frame {
-    contract_handler_frame()
-        : old_handler_{contract::set_handler(throw_contract_error)}
-    {
-        terminate_holder<>::default_terminate = std::set_terminate(terminate);
-    }
+	 contract_handler_frame()
+		  : old_handler_{contract::set_handler(throw_contract_error)}
+	 {
+		  terminate_holder<>::default_terminate = std::set_terminate(terminate);
+	 }
 
-    ~contract_handler_frame()
-    {
-        contract::set_handler(old_handler_);
-        std::set_terminate(terminate_holder<>::default_terminate);
-    }
+	 ~contract_handler_frame()
+	 {
+		  contract::set_handler(old_handler_);
+		  std::set_terminate(terminate_holder<>::default_terminate);
+	 }
 
-    contract::violation_handler old_handler_;
+	 contract::violation_handler old_handler_;
 };
 
 template <typename Func>
 void check_throw_on_contract_violation(Func f, contract::type type) {
-    bool caught_exception = false;
+	 bool caught_exception = false;
 
-    try {
-        f();
-    } catch (test::contract_error & e) {
-        caught_exception = true;
-        BOOST_CHECK(e.type() == type);
-    } catch (...) {
-        caught_exception = true;
-        BOOST_FAIL("expected to catch test::contract_error");
-    }
+	 try {
+		  f();
+	 } catch (test::contract_error & e) {
+		  caught_exception = true;
+		  BOOST_CHECK(e.type() == type);
+	 } catch (...) {
+		  caught_exception = true;
+		  BOOST_FAIL("expected to catch test::contract_error");
+	 }
 
-    BOOST_CHECK(caught_exception);
+	 BOOST_CHECK(caught_exception);
 }
 
 template <typename Func>
 void check_throw_on_contract_violation(Func f, contract::type type, char const * msg) {
-    bool caught_exception = false;
+	 bool caught_exception = false;
 
-    try {
-        f();
-    } catch (test::contract_error & e) {
-        caught_exception = true;
-        BOOST_CHECK(e.type() == type);
-        BOOST_CHECK(e.message() == std::string(msg));
-    } catch (...) {
-        caught_exception = true;
-        BOOST_FAIL("expected to catch test::contract_error");
-    }
+	 try {
+		  f();
+	 } catch (test::contract_error & e) {
+		  caught_exception = true;
+		  BOOST_CHECK(e.type() == type);
+		  BOOST_CHECK(e.message() == std::string(msg));
+	 } catch (...) {
+		  caught_exception = true;
+		  BOOST_FAIL("expected to catch test::contract_error");
+	 }
 
-    BOOST_CHECK(caught_exception);
+	 BOOST_CHECK(caught_exception);
 }
 
 } // namespace test
