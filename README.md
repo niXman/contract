@@ -153,7 +153,7 @@ rules:
   with an exception,
 * the invariant expression is always checked on entry and exit.
 
-### Constructor constract ###
+### Constructor contract ###
 
 A constructor contract block should be defined inside of a constructor of a
 class.  It is similar to a method contract block with some exceptions.  The
