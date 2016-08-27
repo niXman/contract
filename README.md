@@ -177,7 +177,7 @@ following rules:
   exitted with an exception,
 * the invariant expression is always checked on entry and exit.
 
-### Destructor constract ###
+### Destructor contract ###
 
 A destructor contract block should be defined inside of a destructor of a
 class.  It is similar to a method contract block with some exceptions.  The
